@@ -28,7 +28,6 @@ getMovebankStudy(study="LifeTrack Golden Eagle Alps", login=loginStored) # see s
 eagle_move <- getMovebankData(study="LifeTrack Golden Eagle Alps", animalName =  "Adamello20 (eobs 7548)", removeDuplicatedTimestamps=T, login=loginStored)
 head(eagle_move)
 
-
 plot(eagle_move[, 1:2], pch = 20, xlab = "", ylab = "", las = 1, type = "l",
      lwd = 0.5, asp = 1)
 
