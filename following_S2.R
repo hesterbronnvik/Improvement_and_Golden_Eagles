@@ -40,6 +40,8 @@ mapView(data_sp, cex = 3, color = rainbow) # plot on a map
 
 eagle_df <- as(eagle_move_thin, "data.frame")
 
+
+
 # Data cleaning
 
 # Delete observations missing lat or long or a timestamp.
@@ -72,6 +74,21 @@ hist(dat$nsd, breaks = 50)
 table(diff(eagle_df$timestamp))
 wawotest(dat$step)
 wawotest(dat$nsd)
+
+## Penalized contrast
+angle <- turnAngleGc(eagle_move_thin)
+change_point <- lavielle(angle, Lmin = 1, Kmax = 3360, type = "var")
+head(chooseseg(change_point))
+
+fp <- findpath(change_point, 8)
+
+par(mfrow = c(4,2))
+par(mar = c(2,0,0,0))
+for (i in 1:8) {
+  plot(eagle_move_thin, type = "change_point")
+  lines(eagle_move_thin[fp[[i]][1]:fp[[i]][2]], col = "black", lwd = 2)
+  legend("topleft", paste("Segment #", i, sep = " "), lty = c(1), lwd = 2, bty = "n")
+}
 
 ## BCPA
 eagle_df$timestamp2 <- 1:nrow(eagle_df)
