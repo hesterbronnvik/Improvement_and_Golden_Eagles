@@ -132,3 +132,14 @@ mtext("A single individual for 12 hours path plotted with BCPA window size 200",
 
 
 
+
+
+
+
+
+
+
+
+
+
+
