@@ -16,7 +16,7 @@ library(dplyr)
 
 
 # Create a login object for a user account at movebank.org
-loginStored <- movebankLogin(username="hebronnvik", password="Sapereaude!1")
+loginStored <- movebankLogin(username=)
 
 # Get overview information about a Movebank study. Be sure to check the citation and license terms if not using your own data.
 getMovebankStudy(study="LifeTrack Golden Eagle Alps", login=loginStored) # see study-level info
