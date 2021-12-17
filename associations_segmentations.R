@@ -41,7 +41,7 @@ eagleStudyId <- 282734839
 
 # the names of all the individuals in the study
 allInds <- getMovebank("individual", login=loginStored, study_id=eagleStudyId)
-allInds <- allInds %>% dplyr::select(id,local_identifier)
+allInds <- allInds %>% dplyr::select(id,local_identifier, timestamp_start)
 allInds <- separate(allInds, col = "local_identifier", into = c("bank_name","eobs"), 
                     sep = " \\(", remove = F)
 allInds$bank_name <- sub(" ", "\\.", allInds$bank_name)
@@ -50,7 +50,8 @@ allInds$bank_name <- gsub("_", "\\.", allInds$bank_name)
 
 # the names that are in life stage data and in acc data
 birds <- lsf[lsf %in% acc_names]
-
+#birds <- allInds[allInds$local_identifier %in% sub("_completeDF_thermalVSother_windEst.rdata", "", fls),]
+birds <- birds[birds$bank_name %in% lsf,]
 
 # make a frame that contains: 1) the acc name & 2) the gps name, but only of the 28
 
@@ -104,16 +105,37 @@ load(paste0("D:/Golden_Eagle_data/", eagles[1,6]))
 paste0(sub("\\)", "", sub("\\(eobs", "", gsub(" ", "_", eagle_ms@idData$local_identifier))), ".RData")
 ### associate those
 
-eagles <- eagles[which(!eagles$gps_file_name %in% objs),]
-eagles$acc_file_name <- sub(" ", "", eagles$acc_file_name)
+# get the tags of the birds in Martina's segments
+seg_fls <- list.files("D:/Golden_Eagle_data/goldenEagles_wind", full.names = T)
+eagles <- data.frame()
+
+for (i in seg_fls) {
+  load(i)
+  bird_names <- c(unique(burstsWindDF$individual.local.identifier), unique(burstsWindDF$tag.local.identifier))
+  eagles <- rbind(eagles, bird_names)
+}
+colnames(eagles) <- c("local_identifier", "tag")
+
+# get the tags of the birds in Elham's ACC data
+acc_fls <- list.files("D:/Golden_Eagle_data/ACC_data")
+acc_names <- sub(".RData", "", acc_fls)
+acc_tags <- substr(acc_names, nchar(acc_names) - 3, nchar(acc_names))
+acc_data <- as.data.frame(acc_names)
+acc_data <- cbind(acc_data, acc_tags)
+
 
 for (i in 1:nrow(eagles)) {
   # load GPS
-  load(paste0("D:/Golden_Eagle_data/moves/", eagles[i,5]))
-  gps <- eagle_ms
+  load(seg_fls[i]) # the file from Martina
+  names(burstsWindDF) <- gsub("\\.", "_", names(burstsWindDF))
+  gps <- burstsWindDF
+  rm(burstsWindDF)
   # load ACC
-  load(paste0("D:/Golden_Eagle_data/ACC_data", eagles[i,6]))
+  load(paste0("D:/Golden_Eagle_data/ACC_data/", 
+              list.files("D:/Golden_Eagle_data/ACC_data", 
+              pattern = as.character(unique(gps$tag_local_identifier)))))
   acc <- ind
+  rm(ind)
   names(acc) <- gsub("\\.", "_", names(acc))
   acc$timestamp <- as.POSIXct(as.character(acc$timestamp), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
   # Order both datasets by timestamp
@@ -172,8 +194,8 @@ for (i in 1:nrow(eagles)) {
       }
     }
   })
-  save(gpsAcc, file = paste0("C:/Users/Tess Bronnvik/Desktop/Improvement_and_Golden_Eagles/associated/", eagles[i,1], ".RData"))
-  print(paste0("Associated GPS and ACC for ", eagles[i,3]))
+  save(gpsAcc, file = paste0("C:/Users/Tess Bronnvik/Desktop/Improvement_and_Golden_Eagles/associated/", unique(gps$individual_local_identifier), ".RData"))
+  print(paste0("Associated GPS and ACC for ", unique(gps$individual_local_identifier)), quote = FALSE)
 }
 
 objs <- list.files("C:/Users/Tess Bronnvik/Desktop/Improvement_and_Golden_Eagles/associated")
