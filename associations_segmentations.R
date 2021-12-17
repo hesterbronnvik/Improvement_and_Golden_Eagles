@@ -65,9 +65,9 @@ eagles$eobs <- sub("eobs ", "", sub("\\)", "", eagles$eobs))
 eagles$gps_file_name <- paste0(eagles$gps_name, ".RData")
 eagles$acc_file_name <- paste0(eagles$acc_name, "_", eagles$eobs, ".RData")
 
-# "Sampuoir2.19" in Svea's data is not present in the ACC data, but Appennino18 (eobs 6462) is
-# "Siat19" in Svea's data is not present in the ACC data, but Mals18 (eobs 6225) is
-# Stürfis20", "Sampuoir1.19", and "Nalps19" are all on MoveBank and in Svea's data, but did not yield acc/gps
+# "Sampuoir2.19" in S's data is not present in the ACC data, but Appennino18 (eobs 6462) is
+# "Siat19" in S's data is not present in the ACC data, but Mals18 (eobs 6225) is
+# Stürfis20", "Sampuoir1.19", and "Nalps19" are all on MoveBank and in S's data, but did not yield acc/gps
 
 # "Sampuoir2 19 (eobs 6462)", "Nalps19 (eobs 5861)", "Stürfis20 (eobs 7049)"
 # fall out at line 178, 
@@ -77,7 +77,7 @@ eagles$acc_file_name <- paste0(eagles$acc_name, "_", eagles$eobs, ".RData")
 
 save(eagles, file = "eagle_names.RData")
 
-# the birds that are in the MoveBank data but not the ACC data from Elham
+# the birds that are in the MoveBank data but not the ACC data from E
 missings <- allInds$bank_name[!sub("\\-", "\\.", sub("\\.21", "", gsub("_", "\\.", allInds$bank_name))) %in% acc_names]
 missings[2] <- NA
 missings <- na.omit(missings)
@@ -105,7 +105,7 @@ load(paste0("D:/Golden_Eagle_data/", eagles[1,6]))
 paste0(sub("\\)", "", sub("\\(eobs", "", gsub(" ", "_", eagle_ms@idData$local_identifier))), ".RData")
 ### associate those
 
-# get the tags of the birds in Martina's segments
+# get the tags of the birds in M's segments
 seg_fls <- list.files("D:/Golden_Eagle_data/goldenEagles_wind", full.names = T)
 eagles <- data.frame()
 
@@ -116,7 +116,7 @@ for (i in seg_fls) {
 }
 colnames(eagles) <- c("local_identifier", "tag")
 
-# get the tags of the birds in Elham's ACC data
+# get the tags of the birds in E's ACC data
 acc_fls <- list.files("D:/Golden_Eagle_data/ACC_data")
 acc_names <- sub(".RData", "", acc_fls)
 acc_tags <- substr(acc_names, nchar(acc_names) - 3, nchar(acc_names))
@@ -126,7 +126,7 @@ acc_data <- cbind(acc_data, acc_tags)
 
 for (i in 1:nrow(eagles)) {
   # load GPS
-  load(seg_fls[i]) # the file from Martina
+  load(seg_fls[i]) # the file from M
   names(burstsWindDF) <- gsub("\\.", "_", names(burstsWindDF))
   gps <- burstsWindDF
   rm(burstsWindDF)
